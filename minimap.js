@@ -51,6 +51,9 @@
    *
    */
   this.miniMap = function(options){
+    if (!options){
+      return this;
+    }
     var $watch = $(options.scrollBar);
     //create our control
     var $ss = $(sourceHTML).css(sourceCSS);
