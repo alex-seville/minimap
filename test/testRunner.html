@@ -8,19 +8,19 @@
   <script src="http://chaijs.com/chai.js"></script>
   <script>mocha.setup('bdd')</script>
   <script src="../minimap.js"></script>
-  <script src="test.js"></script>
+  
   <script>
     $(function(){
-      mocha
-        .run()
+      mocha.run()
     })
   </script>
 </head>
 <body>
   <div id="mocha"></div>
-  <div id="test-fixture" style="display:none;">
-    <div id="place-near"></div>
-    <div id="watched-content">this is a test<div>
+  <!-- fixture is set to visibility hidden, other scrollTop doesn't work as expected. -->
+  <div id="test-fixture" style="visibility:hidden;">
+    <div id="watched-content" style="overflow:auto;width:200px"><div>
   </div>
+  <script src="test.js"></script>
 </body>
 </html>

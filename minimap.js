@@ -62,9 +62,11 @@
     $watch.after($show);
     $watch.after($ss);
     //We need to modify the style to match where it was placed in the DOM.
-    $ss.css("max-height",$watch.css(HEIGHT)+PX);
-    $ss.css("right",$watch.css("width"));
-    $show.css("right",$watch.css("width"));
+    var $watchWidth = $watch.css("width");
+    var $watchHeight = $watch.css(HEIGHT);
+    $ss.css("max-height",$watchHeight);
+    $ss.css("right",$watchWidth);
+    $show.css("right",$watchWidth);
 
     var doScroll = null;
     
@@ -87,6 +89,7 @@
       
       max =$watch[0].scrollHeight - $watch.height();
       avail = ssHeight - $show.height();
+      avail = avail > 0 ? avail : 0;
       factor = avail/max;
       //mmm...curry.
       doScroll = setupScrollAction(factor,PX);
