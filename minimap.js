@@ -8,7 +8,7 @@
       "width": "100px",
       "max-height":"300px",
       "opacity": "0.5",
-      "background-color":"#aaa",
+    //"background-color":"#aaa",
       "position": "absolute",
       "right": "0",
       "top": "0",
@@ -23,7 +23,7 @@
     "width": "100px",
     "height": "40px",
     "opacity": "0.5",
-    "background-color":"#fff",
+    "background-color":"#aaa",
     "position": "absolute",
     "right":"0",
     "top":"0",
@@ -33,7 +33,7 @@
   var scrollMode = false;
   var HEIGHT = "height";
   var PX = "px";
-  //We curry the scoll method because the factor and px variables
+  //We curry the scroll method because the factor and px variables
   //don't change often.
   function setupScrollAction(factor,px){
     return function($show,$ss,$watch){
@@ -42,6 +42,17 @@
         $ss.scrollTop(st);
       }
       $show.stop().css({"marginTop": (st*factor) + px} );
+    };
+  }
+
+  //We curry the click method because the factor
+  //don't change often.
+  function setupClickAction(factor,$show,$watch,doScroll){
+    return function(event,$ss){
+      event.preventDefault();
+      var offset = $ss[0].offsetParent.offsetTop;
+      $watch.scrollTop((event.pageY-offset)/factor);
+      doScroll($show,$ss,$watch);
     };
   }
 
@@ -69,6 +80,7 @@
     $show.css("right",$watchWidth);
 
     var doScroll = null;
+    var doClick = null;
     
     function matchSource(){
       var factor, max, avail;
@@ -93,6 +105,7 @@
       factor = avail/max;
       //mmm...curry.
       doScroll = setupScrollAction(factor,PX);
+      doClick = setupClickAction(factor,$show,$watch,doScroll);
     }
 
     matchSource();
@@ -100,6 +113,26 @@
     $watch.scroll(function(){
       doScroll($show,$ss,$watch);
     });
+
+    $ss.click(function(event){
+      doClick(event,$ss);
+    });
+
+
+    $show.mousedown(function(event){
+      event.preventDefault();
+      $("body").mouseup(function(event){
+        event.preventDefault();
+        $("body").off("mousemove");
+        $("body").off("mouseup");
+      });
+      $("body").mousemove(function(event){
+         doClick(event,$ss);
+      });
+
+    });
+
+    
 
     return matchSource;
   };
