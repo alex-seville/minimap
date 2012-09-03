@@ -118,21 +118,17 @@
       doClick(event,$ss);
     });
 
-
     $show.mousedown(function(event){
       event.preventDefault();
-      $("body").mouseup(function(event){
+      $("body").on("mouseup.miniMap",function(event){
         event.preventDefault();
-        $("body").off("mousemove");
-        $("body").off("mouseup");
+        $("body").off("mousemove.miniMap");
+        $("body").off("mouseup.miniMap");
       });
-      $("body").mousemove(function(event){
+      $("body").on("mousemove.miniMap",function(event){
          doClick(event,$ss);
       });
-
     });
-
-    
 
     return matchSource;
   };

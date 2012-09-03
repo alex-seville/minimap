@@ -50,7 +50,7 @@ describe('minimap tests', function(){
             $ss.html().should.equal(loremIpsum());
             $ss.css("max-height").should.equal(expected.height);
             $._data($watched[0], "events").should.have.property("scroll");
-            miniMapControl.should.be.a('function');       
+            miniMapControl.should.be.a('function');
         });
         it('should not update until data changed function called', function(){
             var selector = "#"+$watched[0].id;
@@ -96,6 +96,48 @@ describe('minimap tests', function(){
             $watched.trigger("scroll");
             $si.css("marginTop").should.not.be.equal(expected);
 
+        });
+        it('should change the scroll indicator position when the sourceview is clicked', function(){
+            var selector = "#"+$watched[0].id;
+            var miniMapControl = miniMap({
+                scrollBar: selector,
+                content: selector
+            });
+            var $ss = $("#sourceScroll"),
+                $si = $("#scrollIndicator");
+            $watched.html(loremIpsum(true));
+            miniMapControl();
+            var expected = $si.css("marginTop");
+            var clickEvent = $.Event("click");
+            clickEvent.pageY = 500;
+            //clicked
+            $ss.trigger(clickEvent);
+            $si.css("marginTop").should.not.be.equal(expected);
+        });
+        it('should change the scroll indicator position when the scroll indicator is dragged', function(){
+            var selector = "#"+$watched[0].id;
+            var miniMapControl = miniMap({
+                scrollBar: selector,
+                content: selector
+            });
+            var $ss = $("#sourceScroll"),
+                $si = $("#scrollIndicator");
+            $watched.html(loremIpsum(true));
+            miniMapControl();
+            var expected = $si.css("marginTop");
+            var moveEvent = $.Event("mousemove");
+            moveEvent.pageY = 500;
+            //clicked
+            $si.trigger("mousedown");
+            var body = $("body")[0];
+            var bodyEvents = $._data(body, "events");
+            bodyEvents.should.have.property("mousemove");
+            bodyEvents.should.have.property("mouseup");
+            $si.trigger(moveEvent);
+            $si.trigger("mouseup");
+            bodyEvents = $._data(body, "events");
+            should.not.exist(bodyEvents);
+            $si.css("marginTop").should.not.be.equal(expected);
         });
     });
 });
