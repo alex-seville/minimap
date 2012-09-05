@@ -8,7 +8,6 @@
       "width": "100px",
       "max-height":"300px",
       "opacity": "0.5",
-    //"background-color":"#aaa",
       "position": "absolute",
       "right": "0",
       "top": "0",
@@ -67,17 +66,17 @@
     }
     var $watch = $(options.scrollBar);
     //create our control
-    var $ss = $(sourceHTML).css(sourceCSS);
-    var $show = $(indicatorHTML).css(indicatorCSS);
+    var $ss = $(sourceHTML).css($.extend({},sourceCSS,options.sourceCSS || {}));
+    var $show = $(indicatorHTML).css($.extend({},indicatorCSS,options.indicatorCSS || {}));
     //insert into DOM
     $watch.after($show);
     $watch.after($ss);
     //We need to modify the style to match where it was placed in the DOM.
-    var $watchWidth = $watch.css("width");
+    //var $watchWidth = $watch.css("width");
     var $watchHeight = $watch.css(HEIGHT);
     $ss.css("max-height",$watchHeight);
-    $ss.css("right",$watchWidth);
-    $show.css("right",$watchWidth);
+    //$ss.css("right",$watchWidth);
+    //$show.css("right",$watchWidth);
 
     var doScroll = null;
     var doClick = null;
@@ -92,6 +91,8 @@
       newContentDOM.find("[style*='top']").css("top","");
       newContentDOM.find("[style*='bottom']").css("bottom","");
       //then we take the new html
+      //TODO, if the content contains a reference
+      //to minimap we will get a stack explosion!
       var newContent = newContentDOM.html();
       $ss.html(newContent);
       //check if we should be fractionally scrolling (false),
