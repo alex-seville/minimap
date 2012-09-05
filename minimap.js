@@ -64,6 +64,7 @@
     if (!options){
       return this;
     }
+    var keepScripts = typeof options.keepScripts === 'undefined' ? true : options.keepScripts;
     var $watch = $(options.scrollBar);
     //create our control
     var $ss = $(sourceHTML).css($.extend({},sourceCSS,options.sourceCSS || {}));
@@ -91,9 +92,23 @@
       newContentDOM.find("[style*='top']").css("top","");
       newContentDOM.find("[style*='bottom']").css("bottom","");
       //then we take the new html
-      //TODO, if the content contains a reference
-      //to minimap we will get a stack explosion!
       var newContent = newContentDOM.html();
+      //we escape or discard any script tags because we don't want to deal with them
+      if (keepScripts){
+        newContent = newContent.replace(/<script/g,"&lt;script").replace(/\\script/g,"&lt;script");
+      }else{
+        var indx = newContent.indexOf("<script");
+        var part1="",
+        end = "";
+
+        while(indx >= 0){
+          part1 = newContent.slice(0,indx);
+          end = newContent.indexOf("</script>",indx);
+          newContent = part1 + (end > 0 ? newContent.slice(end) : "");
+          indx = newContent.indexOf("<script");
+        }
+      }
+      
       $ss.html(newContent);
       //check if we should be fractionally scrolling (false),
       // or normal scrolling (true)
