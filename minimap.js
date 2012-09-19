@@ -73,11 +73,12 @@
     $watch.after($show);
     $watch.after($ss);
     //We need to modify the style to match where it was placed in the DOM.
-    //var $watchWidth = $watch.css("width");
     var $watchHeight = $watch.css(HEIGHT);
     $ss.css("max-height",$watchHeight);
-    //$ss.css("right",$watchWidth);
-    //$show.css("right",$watchWidth);
+    //we take the scroll bar width and offset the minimap
+    var $watchWidth = $watch.css("width");
+    $ss.css("right",$watchWidth);
+    $show.css("right",$watchWidth);
 
     var doScroll = null;
     var doClick = null;
@@ -129,8 +130,8 @@
     $watch.scroll(function(){
       doScroll($show,$ss,$watch);
     });
-
-    $ss.click(function(event){
+    
+    $ss.mousedown(function(event){
       doClick(event,$ss);
     });
 
