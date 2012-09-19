@@ -11,6 +11,7 @@
       "position": "absolute",
       "right": "0",
       "top": "0",
+      "cursor": "default",
       "color": "#000",
       "overflow":"hidden",
       "font-size": "4px",
@@ -22,6 +23,7 @@
     "width": "100px",
     "height": "40px",
     "opacity": "0.5",
+    "cursor": "default",
     "background-color":"#aaa",
     "position": "absolute",
     "right":"0",
@@ -130,7 +132,7 @@
     $watch.scroll(function(){
       doScroll($show,$ss,$watch);
     });
-    
+
     $ss.mousedown(function(event){
       doClick(event,$ss);
     });
