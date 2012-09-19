@@ -4,7 +4,7 @@ minimap.js
 Adding minimap functionality to code mirror.
 
 ## Usage
-Reference minimap.js
+Reference minimap.js  
 `<script type="text/javascript" src="minimap.js"></script>`  
 
 then create a minimap instance
@@ -23,4 +23,5 @@ To update the minimap when changes occur in the CodeMirror editor simply add thi
 
 
 ## TODO
-I'm sure this could be adapted to non-code mirror fields.
+I'm sure this could be adapted to non-code mirror fields.  
+Code Mirror is not dependent on jQuery, so this plugin shouldn't be either.
