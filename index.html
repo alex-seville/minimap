@@ -4,13 +4,21 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Minimap.js by alex-seville</title>
-
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <link rel="stylesheet" href="http://codemirror.net/lib/codemirror.css">
+    <script src="http://codemirror.net/lib/codemirror.js"></script>
+    <script src="http://codemirror.net/lib/util/overlay.js"></script>
+    <script src="http://codemirror.net/mode/xml/xml.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="https://raw.github.com/alex-seville/minimap/master/minimap.js"></script>
+    <link rel="stylesheet" href="http://codemirror.net/doc/docs.css">
+     <style type="text/css">
+      .CodeMirror {border: 1px solid black;}
+      .cm-mustache {color: #0ca;} 
+    </style>
   </head>
   <body>
     <div class="wrapper">
@@ -19,18 +27,79 @@
         <p>Adding minimap functionality to code-mirror</p>
 
         <p class="view"><a href="https://github.com/alex-seville/minimap">View the Project on GitHub <small>alex-seville/minimap</small></a></p>
-
-
-        <ul>
-          <li><a href="https://github.com/alex-seville/minimap/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/alex-seville/minimap/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/alex-seville/minimap">View On <strong>GitHub</strong></a></li>
-        </ul>
       </header>
       <section>
-        <h1>minimap.js</h1>
+        
 
-<p>Adding minimap functionality to code mirror.</p>
+<form><textarea id="code" name="code">
+<html>
+  <body>
+    <h1>{{title}}</h1>
+    <p>These are links to {{things}}:</p>
+    <ul>{{#links}}
+      <li><a href="{{url}}">{{text}}</a></li>
+    {{/links}}</ul>
+  </body>
+</html>
+<html>
+  <body>
+    <h1>{{title}}</h1>
+    <p>These are links to {{things}}:</p>
+    <ul>{{#links}}
+      <li><a href="{{url}}">{{text}}</a></li>
+    {{/links}}</ul>
+  </body>
+</html>
+<html>
+  <body>
+    <h1>{{title}}</h1>
+    <p>These are links to {{things}}:</p>
+    <ul>{{#links}}
+      <li><a href="{{url}}">{{text}}</a></li>
+    {{/links}}</ul>
+  </body>
+</html>
+<html>
+  <body>
+    <h1>{{title}}</h1>
+    <p>These are links to {{things}}:</p>
+    <ul>{{#links}}
+      <li><a href="{{url}}">{{text}}</a></li>
+    {{/links}}</ul>
+  </body>
+</html>
+</textarea></form>
+
+    <script>
+CodeMirror.defineMode("mustache", function(config, parserConfig) {
+  var mustacheOverlay = {
+    token: function(stream, state) {
+      var ch;
+      if (stream.match("{{")) {
+        while ((ch = stream.next()) != null)
+          if (ch == "}" && stream.next() == "}") break;
+        return "mustache";
+      }
+      while (stream.next() != null && !stream.match("{{", false)) {}
+      return null;
+    }
+  };
+  return CodeMirror.overlayMode(CodeMirror.getMode(config, parserConfig.backdrop || "text/html"), mustacheOverlay);
+});
+
+var editor = CodeMirror.fromTextArea(document.getElementById("code"), 
+            {mode: "mustache" });
+
+var miniMapControl = miniMap({scrollBar: ".CodeMirror-scrollbar",content: ".CodeMirror-lines"});
+editor.setOption("onChange",function(){ miniMapControl();});
+
+
+</script>
+
+<br>
+
+
+
 
 <h2>Usage</h2>
 
@@ -57,7 +126,7 @@ Code Mirror is not dependent on jQuery, so this plugin shouldn't be either.</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/alex-seville">alex-seville</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+       
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
