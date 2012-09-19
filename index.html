@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Minimap.js by alex-seville</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Minimap.js</h1>
+        <p>Adding minimap functionality to code-mirror</p>
+
+        <p class="view"><a href="https://github.com/alex-seville/minimap">View the Project on GitHub <small>alex-seville/minimap</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/alex-seville/minimap/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/alex-seville/minimap/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/alex-seville/minimap">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>minimap.js</h1>
+
+<p>Adding minimap functionality to code mirror.</p>
+
+<h2>Usage</h2>
+
+<p>Reference minimap.js<br><code>&lt;script type="text/javascript" src="minimap.js"&gt;&lt;/script&gt;</code>  </p>
+
+<p>then create a minimap instance</p>
+
+<p><code>var miniMapControl = miniMap({  
+    scrollBar: ".CodeMirror-scrollbar",  
+    content: ".CodeMirror-lines"});</code>  </p>
+
+<p>The class names provided (".CodeMirror-scrollbar" and ".CodeMirror-lines") will likely work with most Code Mirror implementations.</p>
+
+<p>To update the minimap when changes occur in the CodeMirror editor simply add this line after the instance is created:</p>
+
+<p><code>editor.setOption("onChange",function(){ 
+    miniMapControl();  
+});</code></p>
+
+<h2>TODO</h2>
+
+<p>I'm sure this could be adapted to non-code mirror fields.<br>
+Code Mirror is not dependent on jQuery, so this plugin shouldn't be either.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/alex-seville">alex-seville</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
