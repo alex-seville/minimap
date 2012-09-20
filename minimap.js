@@ -1,35 +1,16 @@
 // minimap scroller
 
 (function(){
-  //This is the HTML and css we use for our control.
-  var sourceHTML = "<div id='sourceScroll'></div>";
-  var indicatorHTML = "<div id='scrollIndicator'></div>";
-  var sourceCSS = {
-      "width": "100px",
-      "max-height":"300px",
-      "opacity": "0.5",
-      "position": "absolute",
-      "right": "0",
-      "top": "0",
-      "cursor": "default",
-      "color": "#000",
-      "overflow":"hidden",
-      "font-size": "4px",
-      "line-height":"4px",
-      "z-index": "9"
-  };
 
-  var indicatorCSS = {
-    "width": "100px",
-    "height": "40px",
-    "opacity": "0.5",
-    "cursor": "default",
-    "background-color":"#aaa",
-    "position": "absolute",
-    "right":"0",
-    "top":"0",
-    "z-index": "9"
-  };
+  //cross browser event handling
+  //http://www.javascripter.net/faq/addeventlistenerattachevent.htm
+  function addEventHandler(elem,eventType,handler) {
+   if (elem.addEventListener)
+       elem.addEventListener (eventType,handler,false);
+   else if (elem.attachEvent)
+       elem.attachEvent ('on'+eventType,handler);
+  }
+
   //we start assuming that we will use fractionalScrolling
   var scrollMode = false;
   var HEIGHT = "height";
@@ -56,31 +37,80 @@
       doScroll($show,$ss,$watch);
     };
   }
-
+  var miniMapDefault = {
+    scrollBar: ".CodeMirror-scrollbar",
+    keepScripts: false,
+    miniMapCSS: {
+      "width": "100px",
+      "max-height":"300px",
+      "opacity": "0.5",
+      "position": "absolute",
+      "right": "0",
+      "top": "0",
+      "cursor": "default",
+      "color": "#000",
+      "overflow":"hidden",
+      "font-size": "4px",
+      "line-height":"4px",
+      "z-index": "9"
+    },
+    miniMapBarCSS: {
+      "width": "100px",
+      "height": "40px",
+      "opacity": "0.5",
+      "cursor": "default",
+      "background-color":"#aaa",
+      "position": "absolute",
+      "right":"0",
+      "top":"0",
+      "z-index": "9"
+    }
+  };
   /**
    * @miniMap
    * @public
    *
    */
-  this.miniMap = function(options){
+  this.MiniMap = function (options){
     if (!options){
       return this;
     }
-    var keepScripts = typeof options.keepScripts === 'undefined' ? true : options.keepScripts;
-    var $watch = $(options.scrollBar);
+    this.options = miniMapDefault;
+    this.options.scrollBar = options.scrollBar || this.options.scrollBar;
+    this.options.keepScripts = options.keepScripts || this.options.keepScripts;
+    this.options.content = options.content || this.options.content;
+    
+    //This will return the first match. = $watch
+    this.scrollBar = document.querySelector(this.options.scrollBar);
+    
     //create our control
-    var $ss = $(sourceHTML).css($.extend({},sourceCSS,options.sourceCSS || {}));
-    var $show = $(indicatorHTML).css($.extend({},indicatorCSS,options.indicatorCSS || {}));
+    this.miniMap = document.createElement("div");
+    for(var style in this.options.miniMapCSS){
+      this.miniMap.style[style] = this.options.miniMapCSS[style];
+    }
+
+    this.miniMapBar = document.createElement("div");
+    for(var barStyle in this.options.miniMapBarCSS){
+      this.miniMapBar.style[barStyle] = this.options.miniMapBarCSS[barStyle];
+    }
     //insert into DOM
-    $watch.after($show);
-    $watch.after($ss);
+    var scrollBarParent = this.scrollBar.parentNode;
+    var scrollBarSibling = this.scrollBar.nextSibling;
+    scrollBarParent.insertBefore(this.miniMap, scrollBarSibling);
+    scrollBarParent.insertBefore(this.miniMapBar, scrollBarSibling);
+
     //We need to modify the style to match where it was placed in the DOM.
-    var $watchHeight = $watch.css(HEIGHT);
-    $ss.css("max-height",$watchHeight);
+    var scrollBarStyles = window.getComputedStyle(this.scrollBar, null);
+    if (!scrollBarStyles){
+      scrollBarStyles = this.scrollBar.style;
+    }
+    this.miniMap.style.maxHeight = scrollBarStyles.height;
+
     //we take the scroll bar width and offset the minimap
-    var $watchWidth = $watch.css("width");
-    $ss.css("right",$watchWidth);
-    $show.css("right",$watchWidth);
+    //this calculation works, but it's not an exact science
+    var scrollBarWidth = (scrollBar.offsetWidth - parseFloat(scrollBarStyles.width.replace("px","")))+"px";
+    this.miniMap.style.right = scrollBarWidth;
+    this.miniMapBar.style.right = scrollBarWidth;
 
     var doScroll = null;
     var doClick = null;
@@ -90,7 +120,9 @@
       //we have to clone to new content because we need to
       //remove any elements that might distort the scrollHeight
       //of our source pane
-      var newContentDOM = $(options.content).clone();
+      //var newContentDOM = $(options.content).clone();
+      var newContentDOM = document.querySelector(content).cloneNode(true);
+      newContentDOM = $(newContentDOM);
       //Here we null-ify any top or bottom settings
       newContentDOM.find("[style*='top']").css("top","");
       newContentDOM.find("[style*='bottom']").css("bottom","");
@@ -127,17 +159,26 @@
       doClick = setupClickAction(factor,$show,$watch,doScroll);
     }
 
+    //for the code work while it's been cleaned up,
+    //some things need to be renamed here
+    keepScripts = this.keepScripts;
+    $ss = $(this.miniMap);
+    $show = $(this.miniMapBar);
+    $watch = $(this.scrollBar);
+    content = this.options.content;
+    //soon this can be removed
+
     matchSource();
     //when we scroll, do the current scroll function
-    $watch.scroll(function(){
+    addEventHandler(this.scrollBar,"scroll",function(){
       doScroll($show,$ss,$watch);
     });
 
-    $ss.mousedown(function(event){
+    addEventHandler(this.miniMap,"mousedown",function(event){
       doClick(event,$ss);
     });
 
-    $show.mousedown(function(event){
+    addEventHandler(this.miniMapBar,"mousedown",function(event){
       event.preventDefault();
       $("body").on("mouseup.miniMap",function(event){
         event.preventDefault();

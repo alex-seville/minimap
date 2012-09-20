@@ -8,7 +8,7 @@
     <script src="http://codemirror.net/lib/util/overlay.js"></script>
     <script src="http://codemirror.net/mode/xml/xml.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script src="miniMap.js"></script>
+    <script src="minimap.js"></script>
     <link rel="stylesheet" href="http://codemirror.net/doc/docs.css">
 
     <style type="text/css">
@@ -78,7 +78,7 @@ CodeMirror.defineMode("mustache", function(config, parserConfig) {
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), 
             {mode: "mustache" });
 
-var miniMapControl = miniMap({scrollBar: ".CodeMirror-scrollbar",content: ".CodeMirror-lines"});
+var miniMapControl = MiniMap({scrollBar: ".CodeMirror-scrollbar",content: ".CodeMirror-lines"});
 editor.setOption("onChange",function(){ miniMapControl();});
 
 
