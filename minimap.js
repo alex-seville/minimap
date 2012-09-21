@@ -2,28 +2,7 @@
 
 (function(){
 
-  //cross browser event handling
-  //http://www.javascripter.net/faq/addeventlistenerattachevent.htm
-  function addEventHandler(elem,eventType,handler) {
-   if (elem.addEventListener)
-       elem.addEventListener (eventType,handler,false);
-   else if (elem.attachEvent)
-       elem.attachEvent ('on'+eventType,handler);
-  }
-
-  function removeStyle(elem,style){
-    if(elem.children.length > 0){
-      for (var i = 0; i < elem.children.length; i++)
-      {
-        removeStyle(elem.children[i],style);
-      }
-    }
-    elem.style.removeProperty(style);
-  }
-
-  function unPx(pixelValue){
-    return parseFloat(pixelValue.replace("px"),"");
-  }
+  
 
   //we start assuming that we will use fractionalScrolling
   var scrollMode = false;
@@ -199,19 +178,53 @@
         doClick(event,mm.miniMap);
       });
 
-      //this still needs to be de-jquery-ied
-      addEventHandler(mm.miniMapBar,"mousedown",function(event){
-        event.preventDefault();
-        $("body").on("mouseup.miniMap",function(event){
-          event.preventDefault();
-          $("body").off("mousemove.miniMap");
-          $("body").off("mouseup.miniMap");
-        });
-        $("body").on("mousemove.miniMap",function(event){
+      var mouseMoveDocumentFcn = function(event){
            doClick(event,mm.miniMap);
-        });
-      });
+      };
+      var mouseUpDocumentFcn = function(event){
+          event.preventDefault();
+          removeEventHandler(document.body,"mousemove",mouseMoveDocumentFcn);
+          removeEventHandler(document.body,"mouseup",mouseUpDocumentFcn);
+      };
+      var mouseDownMiniMapBarFcn = function(event){
+        event.preventDefault();
+        addEventHandler(document.body,"mouseup",mouseUpDocumentFcn);
+        addEventHandler(document.body,"mousemove",mouseMoveDocumentFcn);
+      };
+      
+      addEventHandler(mm.miniMapBar,"mousedown",mouseDownMiniMapBarFcn);
     }
   };
+
+  //Helper functions
+
+  //cross browser event handling
+  //http://www.javascripter.net/faq/addeventlistenerattachevent.htm
+  function addEventHandler(elem,eventType,handler) {
+   if (elem.addEventListener)
+       elem.addEventListener (eventType,handler,false);
+   else if (elem.attachEvent)
+       elem.attachEvent ('on'+eventType,handler);
+  }
+
+  function removeEventHandler(elem,eventType,handler) {
+   if (elem.removeEventListener)
+       elem.removeEventListener (eventType,handler,false);
+   else if (elem.detachEvent)
+       elem.detachEvent ('on'+eventType,handler);
+  }
+
+  function removeStyle(elem,style){
+    if(elem.children.length > 0){
+      for (var i = 0; i < elem.children.length; i++)
+        removeStyle(elem.children[i],style);
+    }
+    elem.style.removeProperty(style);
+  }
+
+  function unPx(pixelValue){
+    return parseFloat(pixelValue.replace("px"),"");
+  }
+
   this.miniMap = MiniMap;
 }).call(this);
