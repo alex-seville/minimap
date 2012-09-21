@@ -78,8 +78,8 @@ CodeMirror.defineMode("mustache", function(config, parserConfig) {
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), 
             {mode: "mustache" });
 
-var miniMapControl = MiniMap({scrollBar: ".CodeMirror-scrollbar",content: ".CodeMirror-lines"});
-editor.setOption("onChange",function(){ miniMapControl();});
+var miniMapControl = new miniMap({scrollBar: ".CodeMirror-scrollbar",content: ".CodeMirror-lines"});
+editor.setOption("onChange",function(){ miniMapControl.mirrorContent();});
 
 
 </script>
