@@ -1,6 +1,9 @@
 // minimap scroller
+// We put MiniMap into the global scope
+//because that's what CodeMirror does
 
-(function(){
+window.MiniMap = (function() {
+  "use strict";
   /**
    * @miniMap
    * @public
@@ -229,5 +232,5 @@
       return into;
   }
 
-  this.miniMap = MiniMap;
-}).call(this);
+  return MiniMap;
+})();
