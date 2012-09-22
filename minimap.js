@@ -7,9 +7,6 @@
    *
    */
   function MiniMap (options){
-    if (!options){
-      return this;
-    }
     //we start assuming that we will use fractionalScrolling
     this.scrollNormally = false;
     this.options = extend({},this.miniMapDefaults);
