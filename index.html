@@ -90,7 +90,7 @@ CodeMirror.defineMode("mustache", function(config, parserConfig) {
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), 
             {mode: "mustache" });
 
-var miniMapControl = MiniMap();
+var miniMapControl = new miniMap();
 editor.setOption("onChange",function(){ miniMapControl();});
 
 

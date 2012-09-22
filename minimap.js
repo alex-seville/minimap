@@ -61,9 +61,7 @@
    *
    */
   this.miniMap = function(options){
-    if (!options){
-      return this;
-    }
+    
     var keepScripts = typeof options.keepScripts === 'undefined' ? true : options.keepScripts;
     var $watch = $(options.scrollBar);
     //create our control
