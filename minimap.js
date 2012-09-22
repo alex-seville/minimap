@@ -1,65 +1,6 @@
 // minimap scroller
 
 (function(){
-
-  
-
-  //we start assuming that we will use fractionalScrolling
-  var scrollMode = false;
-  var HEIGHT = "height";
-  var PX = "px";
-  //We curry the scroll method because the factor and px variables
-  //don't change often.
-  function setupScrollAction(factor,px){
-    return function(show,ss,watch){
-      var st = watch.scrollTop;
-      if (scrollMode){
-        ss.scrollTop = st;
-      }
-      //$show.stop().css({"marginTop": (st*factor) + px} );
-      show.style.marginTop = (st*factor) +px;
-    };
-  }
-
-  //We curry the click method because the factor
-  //don't change often.
-  function setupClickAction(factor,show,watch,doScroll){
-    return function(event,ss){
-      event.preventDefault();
-      var offset = ss.offsetParent.offsetTop;
-      watch.scrollTop = (event.pageY-offset)/factor;
-      doScroll(show,ss,watch);
-    };
-  }
-  var miniMapDefault = {
-    scrollBar: ".CodeMirror-scrollbar",
-    keepScripts: false,
-    miniMapCSS: {
-      "width": "100px",
-      "max-height":"300px",
-      "opacity": "0.5",
-      "position": "absolute",
-      "right": "0",
-      "top": "0",
-      "cursor": "default",
-      "color": "#000",
-      "overflow":"hidden",
-      "font-size": "4px",
-      "line-height":"4px",
-      "z-index": "9"
-    },
-    miniMapBarCSS: {
-      "width": "100px",
-      "height": "40px",
-      "opacity": "0.5",
-      "cursor": "default",
-      "background-color":"#aaa",
-      "position": "absolute",
-      "right":"0",
-      "top":"0",
-      "z-index": "9"
-    }
-  };
   /**
    * @miniMap
    * @public
@@ -69,30 +10,71 @@
     if (!options){
       return this;
     }
-    this.options = miniMapDefault;
-    this.options.scrollBar = options.scrollBar || this.options.scrollBar;
-    this.options.keepScripts = options.keepScripts || this.options.keepScripts;
-    this.options.content = options.content || this.options.content;
+    //we start assuming that we will use fractionalScrolling
+    this.scrollNormally = false;
+    this.options = extend({},this.miniMapDefaults);
+    extend(this.options,options);
+    //get the scroll element we watch
     this.initScrollBar();
-    this.displayMiniMap();
-    this.restOfSetup();
+    //create and display the minimap
+    this._displayMiniMap();
+    //match the content we're watching and create event functions
+    //based on the content
+    this.mirrorContent();
+    //register all the events
+    this._registerEvents();
   }
 
   MiniMap.prototype = {
     initScrollBar: function() {
-        //This will return the first match. = $watch
+        //This will return the first match for the scrollBar selector
       this.scrollBar = document.querySelector(this.options.scrollBar);
     },
-    displayMiniMap: function(){
-      //create our control
-      this.miniMap = document.createElement("div");
-      for(var style in this.options.miniMapCSS){
-        this.miniMap.style[style] = this.options.miniMapCSS[style];
+    miniMapDefaults: {
+      scrollBar: ".CodeMirror-scrollbar",
+      content: ".CodeMirror-lines",
+      keepScripts: false,
+      miniMapStyles: {
+        //these styles can be overriden
+        //in the constructor
+        "width": "100px",
+        "opacity": "0.5",
+        "right": "0",
+        "top": "0",
+        "color": "#000",
+        "fontSize": "4px",
+        "lineHeight":"4px",
+        "zIndex": "9",
+        //these styles shouldn't need to be changed
+        "cursor": "default",
+        "position": "absolute",
+        "overflow":"hidden"
+      },
+      miniMapBarStyles: {
+        //these styles can be overriden
+        //in the constructor
+        "width": "100px",
+        "height": "40px",
+        "opacity": "0.5",
+        "backgroundColor":"#aaa",
+        "right":"0",
+        "top":"0",
+        "zIndex": "9",
+        //these styles shouldn't need to be changed
+        "position": "absolute",
+        "cursor": "default"
       }
-
+    },
+    _displayMiniMap: function(){
+      //create the div to display the minimap
+      this.miniMap = document.createElement("div");
+      for(var style in this.options.miniMapStyles){
+        this.miniMap.style[style] = this.options.miniMapStyles[style];
+      }
+      //create the minimap highlight bar
       this.miniMapBar = document.createElement("div");
-      for(var barStyle in this.options.miniMapBarCSS){
-        this.miniMapBar.style[barStyle] = this.options.miniMapBarCSS[barStyle];
+      for(var barStyle in this.options.miniMapBarStyles){
+        this.miniMapBar.style[barStyle] = this.options.miniMapBarStyles[barStyle];
       }
       //insert into DOM
       var scrollBarParent = this.scrollBar.parentNode;
@@ -101,6 +83,7 @@
       scrollBarParent.insertBefore(this.miniMapBar, scrollBarSibling);
 
       //We need to modify the style to match where it was placed in the DOM.
+      //namely the height.
       var scrollBarStyles = window.getComputedStyle(this.scrollBar, null);
       if (!scrollBarStyles){
         scrollBarStyles = this.scrollBar.style;
@@ -109,20 +92,17 @@
 
       //we take the scroll bar width and offset the minimap
       //this calculation works, but it's not an exact science
+      //Does not work in FF
       var scrollBarWidth = (this.scrollBar.offsetWidth - unPx(scrollBarStyles.width))+"px";
       this.miniMap.style.right = scrollBarWidth;
       this.miniMapBar.style.right = scrollBarWidth;
     },
-    /*
-    var doScroll = null;
-    var doClick = null;
-    */
     mirrorContent: function(){
       var factor, max, avail;
       //we have to clone to new content because we need to
       //remove any elements that might distort the scrollHeight
       //of our source pane
-      var newContentDOM = document.querySelector(content).cloneNode(true);
+      var newContentDOM = document.querySelector(this.options.content).cloneNode(true);
       
       //Here we null-ify any top or bottom settings
       removeStyle(newContentDOM,"top");
@@ -153,33 +133,29 @@
       var showHeight = unPx(window.getComputedStyle(this.miniMapBar, null).height);
       var watchHeight = unPx(window.getComputedStyle(this.scrollBar, null).height);
 
-      scrollMode = this.miniMap.scrollHeight > ssHeight+1;
+      this.scrollNormally = this.miniMap.scrollHeight > ssHeight+1;
       
       max =this.scrollBar.scrollHeight - watchHeight;
       avail = ssHeight - showHeight;
       avail = avail > 0 ? avail : 0;
       factor = avail/max;
       //mmm...curry.
-      doScroll = setupScrollAction(factor,PX);
-      doClick = setupClickAction(factor,this.miniMapBar,this.scrollBar,doScroll);
+      this._doScroll = this._setupScrollAction(factor);
+      this._doClick = this._setupClickAction(factor,this.miniMapBar,this.scrollBar,this._doScroll);
     },
-    restOfSetup: function(){
-      content = this.options.content;
-      //soon this can be removed
-
-      this.mirrorContent();
+    _registerEvents: function(){
       var mm = this;
       //when we scroll, do the current scroll function
       addEventHandler(mm.scrollBar,"scroll",function(){
-        doScroll(mm.miniMapBar,mm.miniMap,mm.scrollBar);
+        mm._doScroll(mm.miniMapBar,mm.miniMap,mm.scrollBar);
       });
 
       addEventHandler(mm.miniMap,"mousedown",function(event){
-        doClick(event,mm.miniMap);
+        mm._doClick(event,mm.miniMap);
       });
 
       var mouseMoveDocumentFcn = function(event){
-           doClick(event,mm.miniMap);
+           mm._doClick(event,mm.miniMap);
       };
       var mouseUpDocumentFcn = function(event){
           event.preventDefault();
@@ -193,6 +169,27 @@
       };
       
       addEventHandler(mm.miniMapBar,"mousedown",mouseDownMiniMapBarFcn);
+    },
+    _setupScrollAction: function (factor){
+      //We curry the scroll method because the factor
+      //don't change often.
+      return function(show,ss,watch){
+        var st = watch.scrollTop;
+        if (this.scrollNormally){
+          ss.scrollTop = st;
+        }
+        show.style.marginTop = (st*factor) +"px";
+      };
+    },
+    _setupClickAction: function (factor,show,watch,doScroll){
+      //We curry the click method because the factor
+      //don't change often.
+      return function(event,ss){
+        event.preventDefault();
+        var offset = ss.offsetParent.offsetTop;
+        watch.scrollTop = (event.pageY-offset)/factor;
+        this._doScroll(show,ss,watch);
+      };
     }
   };
 
@@ -224,6 +221,15 @@
 
   function unPx(pixelValue){
     return parseFloat(pixelValue.replace("px"),"");
+  }
+
+  function extend(into,from) {
+      if (null === into || "object" !== typeof into) throw Error("destination of extend must exist.");
+      if (null === from || "object" !== typeof from) return from;
+      for (var attr in from) {
+          if (from.hasOwnProperty(attr)) into[attr] = from[attr];
+      }
+      return into;
   }
 
   this.miniMap = MiniMap;
