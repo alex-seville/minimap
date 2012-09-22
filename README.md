@@ -1,7 +1,10 @@
 minimap.js
 =======
 
-Adding minimap functionality to code mirror.
+Adding minimap functionality to code mirror. See it in action:
+
+[http://alex-seville.github.com/minimap/](http://alex-seville.github.com/minimap/)
+
 
 ## Usage
 Reference minimap.js  
