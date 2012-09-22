@@ -90,10 +90,12 @@ window.MiniMap = (function() {
       }
       this.miniMap.style.maxHeight = scrollBarStyles.height;
 
-      //we take the scroll bar width and offset the minimap
-      //this calculation works, but it's not an exact science
-      //Does not work in FF
-      var scrollBarWidth = (this.scrollBar.offsetWidth - unPx(scrollBarStyles.width))+"px";
+      //we take the scroll bar offsetWidth.
+      //Ideally we should provide a way for the consumer to override
+      //this in the case of a custom scrollbar
+      //we also subtract one so that it's right on the scrollbar,
+      //now sure if this is just a mac thing, need to test cross OS.
+      var scrollBarWidth = (this.scrollBar.offsetWidth - 1)+"px";
       this.miniMap.style.right = scrollBarWidth;
       this.miniMapBar.style.right = scrollBarWidth;
     },
