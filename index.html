@@ -121,9 +121,7 @@ editor.setOption("onChange",function(){ miniMapControl.mirrorContent();});
 
 <p>To update the minimap when changes occur in the CodeMirror editor simply add this line after the instance is created:</p>
 
-<p><code>editor.setOption("onChange",function(){ 
-    miniMapControl.mirrorContent();  
-});</code></p>
+<p><code>editor.setOption("onChange",miniMapControl.mirrorContent);</code></p>
 
 <h2>TODO</h2>
 <p>Different code-mirror implementations may use different scrollbar or content selectors.  I haven't tested a variety of situations to make sure it still works.</p>
