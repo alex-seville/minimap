@@ -25,6 +25,7 @@
       <header>
         <h1>MiniMap.js</h1>
         <p>Adding minimap functionality to code-mirror</p>
+        <p><b>Note: This project is no longer maintained.  The source code remains for demonstrative purposes.</b></p>
 
         <p class="view"><a href="https://github.com/alex-seville/minimap">View the Project on GitHub <small>alex-seville/minimap</small></a></p>
       </header>
@@ -101,32 +102,12 @@ editor.setOption("onChange",function(){ miniMapControl.mirrorContent();});
 
 
 
-<h2>Usage</h2>
-
-<p>Reference minimap.js<br><code>&lt;script type="text/javascript" src="minimap.js"&gt;&lt;/script&gt;</code>  </p>
-
-<p>then create a minimap instance</p>
-
-<p><code>var miniMapControl = new MiniMap();</code>  </p>
-
-<p>You can optionally pass in the following parameters:</p>
-<ul>
-  <li>scrollBar: The class name of the scroll element, default is ".CodeMirror-scrollbar".</li>
-  <li>content: The actual content to show in the minimap, the default is ".CodeMirror-lines".</li>
-  <li>keepScripts: Whether to keep (but escape) script tags found in the content, or to just remove them entirely</li>
-  <li>miniMapStyles: The css styles for the minimap (must be CSSStyleDeclaration format, camelCase without hyphens)</li>
-  <li>miniMapBarStyles: The css styles for the minimap highlight bar (must be CSSStyleDeclaration format, camelCase without hyphens)</li>
-</ul>
+<h2>Note: This code is no longer maintained.</h2>
 
 
-<p>To update the minimap when changes occur in the CodeMirror editor simply add this line after the instance is created:</p>
 
-<p><code>editor.setOption("onChange",miniMapControl.mirrorContent);</code></p>
 
-<h2>TODO</h2>
-<p>Different code-mirror implementations may use different scrollbar or content selectors.  I haven't tested a variety of situations to make sure it still works.</p>
-<p>I'm sure this could be adapted to non-code mirror text boxes, but for the moment it only works with code-mirror.</p>
-      </section>
+< </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/alex-seville">alex-seville</a></p>
        
